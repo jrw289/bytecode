@@ -1,0 +1,30 @@
+(line # in source code) 	instr-index		opcode: which instruction		oparg: arg passed to opcode fun (e.g., index)		(resolved argument)
+
+"listy =[]"
+  2           0 BUILD_LIST 0 - Creates a list consuming count items from the stack and pushes the resulting list on the stack
+              2 STORE_FAST               0 (listy)   	- Stores the top of the stack (TOS) into local co_varnames[var_num] (tuple containing names of 
+															any local variables used in the function body)
+
+
+"for i in range(0,10):"
+  3           4 LOAD_GLOBAL              0 (range)	 	- Loads the global named co_names[namei] onto the stack 
+              6 LOAD_CONST               1 (0)		 	- Pushes co_consts[consti] onto the stack
+              8 LOAD_CONST               2 (10)		 	-  " " " " "
+             10 CALL_FUNCTION            2			 	- Pops all args and the callable object off the stack, calls the callable obj with those args,
+														   then pushes the return value returned by the callable object
+             12 GET_ITER								- TOS = iter(TOS)
+        >>   14 FOR_ITER                14 (to 30)		- Since GET_ITER makes TOS an iterator, calls next()
+             16 STORE_FAST               1 (i)			- Stores TOS in co_varnames[var_num]
+
+
+"listy.append(i)"
+  4          18 LOAD_FAST                0 (listy)		- Pushes a reference to the local co_varnames[var_num] onto the stack
+             20 LOAD_METHOD              1 (append)		- Choose the append function
+             22 LOAD_FAST                1 (i)			- Push the value of i onto the stack
+             24 CALL_METHOD              1				- Call append
+             26 POP_TOP									- Pop top item on the stack
+             28 JUMP_ABSOLUTE           14				- Set bytecode counter to 14 
+
+"return listy"
+  5     >>   30 LOAD_FAST                0 (listy)		- Push co_consts[consti]
+             32 RETURN_VALUE							- Returns with TOS to the caller of the function (finishes the function)

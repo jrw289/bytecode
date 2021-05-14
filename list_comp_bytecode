@@ -1,0 +1,33 @@
+(line # in source code) 	instr-index		opcode: which instruction		oparg: arg passed to opcode fun (e.g., index)		(resolved argument)
+
+  8           0 LOAD_CONST               1 (<code object <listcomp> at 0x7fdabdff4190, file "/home/jake/python_workdir/bytecode/funcs.py", line 8>) // Make listcomp (LC) variable (see below)
+              2 LOAD_CONST               2 ('list_comp.<locals>.<listcomp>')) 																		// Defines LC var in local namespace object 
+              4 MAKE_FUNCTION            0																											// Creating a function with the name and code object
+																																						of the two previous objects, then pushes fun back
+																																						on the stack
+              6 LOAD_GLOBAL              0 (range)																									// Similar to loop bytecode 
+              8 LOAD_CONST               3 (0)
+             10 LOAD_CONST               4 (10)
+             12 CALL_FUNCTION            2																											// Calls function w/ arg: pop 2 to get to arg
+																																						So 0 and 10 are popped, the range is taken
+																																						Puts the constructed function on the stack
+																																					
+             14 GET_ITER																															// TOS = iter(TOS) (in this case, range)
+             16 CALL_FUNCTION            1																											// Calls function w/ arg: pop 1 to get to arg
+																																						So the range iterator is popped, then the list
+																																						comprehension is fed the range iterator 
+             18 STORE_FAST               0 (listy)																									// Stores listy in co_varnames[var_num] at pos 0
+
+  9          20 LOAD_FAST                0 (listy)																									// Loads listy for extraction
+             22 RETURN_VALUE																														// Returns listy as function call finishes
+
+Disassembly of <code object <listcomp> at 0x7fdabdff4190, file "/home/jake/python_workdir/bytecode/funcs.py", line 8>:
+  8           0 BUILD_LIST               0				// Creates a list w/ 0 elements from the stack, then pushes resulting list on the stack
+              2 LOAD_FAST                0 (.0)			// Push the value 0 onto the stack
+        >>    4 FOR_ITER                 8 (to 14)		// Calls next() method 
+              6 STORE_FAST               1 (i)			// Stores i in co_varnames[var_num]
+              8 LOAD_FAST                1 (i)			// Push the value i onto the stack  
+             10 LIST_APPEND              2				// Calls list.append(TOS[-i], TOS) to add i onto list
+             12 JUMP_ABSOLUTE            4				// Set bytecode counter to 4
+        >>   14 RETURN_VALUE							// Finish LC function call 
+
